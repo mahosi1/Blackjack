@@ -52,7 +52,6 @@
     <Compile Include="InvalidCutException.cs" />
     <Compile Include="PlayAction.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="PlayerStragetgy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shoe.cs" />
