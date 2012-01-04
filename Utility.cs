@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace ConsoleApplication7
+namespace Testing
 {
     public static class Utility
     {

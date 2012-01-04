@@ -1,6 +1,7 @@
 using System.Linq;
+using ConsoleApplication7;
 
-namespace ConsoleApplication7
+namespace Testing
 {
     public class Dealer : Player
     {
@@ -11,23 +12,12 @@ namespace ConsoleApplication7
             this.Shuffle();
         }
 
-        public int FinalAmount
+        public void SetCard(Suit suit, CardFace cardFace, int index)
         {
-            get
-            {
-                IOrderedEnumerable<int> found = from p in this.CurrentValue()
-                            where p < 22
-                            orderby p descending
-                            select p;
-                if (found.Count() >= 1)
-                    return found.First();
-
-                return this.CurrentValue().First();
-
-
-
-            }
+            this.AtIndex(suit, cardFace, index);
         }
+
+
 
         public Card Deal()
         {
@@ -42,11 +32,30 @@ namespace ConsoleApplication7
 
         public override PlayAction Play(Card dealersTopCard)
         {
-            if (this.CurrentValue().Any(x => x >= 17))
+
+
+            if (this.CurrentValue().Any(x => x >= 18))
             {
                 return PlayAction.Stay;
             }
+
+
+
+            if(this.CurrentValue().Any(x => x == 17) && !this.SoftValues().Any())
+            {
+                //if (this.Hand.Any(x => x.CardFace == CardFace.Ace))
+                //{
+                //    //Debugger.Break();
+                //}
+
+                return PlayAction.Stay;
+            }
+            //Console.Out.WriteLine("Hitting on a ");
+            //this.CurrentValue().ForEach(x => Console.Out.WriteLine("\t{0}", x));
+
+
             return PlayAction.Hit;
+
         }
 
         public bool NeedsToNewShoe()
@@ -58,5 +67,6 @@ namespace ConsoleApplication7
         {
             _shoe = Shoe.Create(7);
         }
+
     }
 }

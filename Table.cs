@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using ConsoleApplication7;
 
-namespace ConsoleApplication7
+namespace Testing
 {
     public class Table
     {
@@ -72,23 +73,37 @@ namespace ConsoleApplication7
             }
             _dealer.TakeCard(_dealer.Deal());
 
-            if(_dealer.HasBlackJack())
+            if (!_dealer.HasBlackJack())
             {
-                this.Payout(toPlay, _dealer);
-                return;
+                foreach (Player player in toPlay)
+                {
+                    if (player.HasBlackJack())
+                        continue;
+                    this.PlayHand(player);
+                }
+
+                this.PlayHand(this._dealer);
             }
 
-
-            foreach (Player player in toPlay)
-            {
-                if (player.HasBlackJack())
-                    continue;
-                this.PlayHand(player);
-            }
-
-            this.PlayHand(this._dealer);
+            this.TraceOutPlayerback(toPlay, this._dealer);
 
             this.Payout(toPlay, this._dealer);
+
+        }
+
+        private void TraceOutPlayerback(Player[] toPlay, Dealer dealer)
+        {
+            return;
+            foreach (Player player in toPlay)
+            {
+
+                Utility.WriteLine("{0}\n{1}\n{2}\n\n", player.Name,
+                    player.ToStringOfHand(), player.CurrentValue().First());
+            }
+
+            Utility.WriteLine("{0}\n{1}\n{2}", dealer.Name,
+                dealer.ToStringOfHand(), dealer.CurrentValue().First());
+
 
         }
 
@@ -103,10 +118,15 @@ namespace ConsoleApplication7
                 sb.AppendFormat("{0} - {1}\n", card.CardFace, card.Suit);
             }
 
-            Utility.WriteLine("DEALER {1} = {0} ", sb, dealer.FinalAmount);
+            Utility.WriteLine("\n\nDEALER ({1}) \n{0} ", sb, dealer.FinalAmount);
 
-            Utility.WriteLine(" {0} - {1} ", players[0].Name,
-                players[0].ToStringOfHand());
+            foreach (var player in players  )
+            {
+
+                Utility.WriteLine("Player: {0}({2}) \n{1} ", player.Name,
+                    player.ToStringOfHand(), player.FinalAmount);
+                
+            }
 
 
             
@@ -132,7 +152,6 @@ namespace ConsoleApplication7
             {
                 foreach (Player player in busted)
                 {
-                    Utility.WriteLine("loss from busted ");
                     player.Payout(-1);
                     tmp.Remove(player);
                 }
@@ -161,7 +180,6 @@ namespace ConsoleApplication7
                 
                 foreach (Player player in winners)
                 {
-                    Utility.WriteLine("we got a win");
                     player.Payout(1);
                     tmp.Remove(player);
 
@@ -174,7 +192,6 @@ namespace ConsoleApplication7
 
                 foreach (Player player in ties)
                 {
-                    Utility.WriteLine("we got a tie");
                     
                     player.Payout(0);
                     tmp.Remove(player);
@@ -183,10 +200,11 @@ namespace ConsoleApplication7
 
 
                 var losers = tmp.Where(x => !x.IsBusted());
-                Utility.WriteLine("loss from less than");
                 losers.ForEach(x => x.Payout(-1));
 
             }
+
+            _dealer.Reset();
 
 
 
@@ -195,14 +213,30 @@ namespace ConsoleApplication7
 
         private void PlayHand(Player player)
         {
-            PlayAction play = player.Play(this._dealer.SecondCard);
+            //if(player.GetType() == typeof(Dealer))
+            //{
+            //    var dealer = (Dealer) player;
+            //    dealer.SetCard(Suit.Clubs, CardFace.Four, 0);
+            //    dealer.SetCard(Suit.Clubs, CardFace.Four, 1);
+            //}
+
+            //Card card = new Card(Suit.Clubs, CardFace.Ace);
+
+            PlayAction play = player.Play(this._dealer.FirstCard);
             if (play == PlayAction.Stay)
                 return;
             if(play == PlayAction.Hit)
             {
-                var bust = player.TakeCard(_dealer.Deal());
+                var c = _dealer.Deal();
+                var bust = player.TakeCard(c);
                 if(!bust)
                     this.PlayHand(player);
+            }
+            else if(play == PlayAction.Double)
+            {
+                if (player.Hand.Count() != 2)
+                    throw new Exception("only double on first");
+                player.TakeCard(_dealer.Deal());
             }
 
         }

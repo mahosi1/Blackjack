@@ -1,4 +1,4 @@
-namespace ConsoleApplication7
+namespace Testing
 {
     public enum PlayAction
     {

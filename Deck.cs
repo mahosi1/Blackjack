@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ConsoleApplication7;
 
-namespace ConsoleApplication7
+namespace Testing
 {
     public class Deck : IEnumerable<Card>
     {

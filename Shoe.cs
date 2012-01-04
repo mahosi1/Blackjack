@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using ConsoleApplication7;
 
-namespace ConsoleApplication7
+namespace Testing
 {
     public class Shoe
     {

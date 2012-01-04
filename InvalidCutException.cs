@@ -1,6 +1,6 @@
 using System;
 
-namespace ConsoleApplication7
+namespace Testing
 {
     public class InvalidCutException : Exception
     {

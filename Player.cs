@@ -1,8 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using ConsoleApplication7;
 
-namespace ConsoleApplication7
+namespace Testing
 {
 
     public abstract class Player : CardHandler, IEquatable<Player>
@@ -15,9 +16,15 @@ namespace ConsoleApplication7
             get { return this.ToStringOfHand(); }
         }
 
+
         protected Player(string name)
         {
             _name = name;
+        }
+
+        public void Reset()
+        {
+            this.Clear();
         }
 
         public abstract PlayAction Play(Card dealersTopCard);
@@ -30,7 +37,7 @@ namespace ConsoleApplication7
         {
 
             Utility.WriteLine("Payout of {0} to {1} with {2}", payout, this.Name, 
-            this.ToStringOfHand());
+            this.FinalAmount);
             if (_hand.Count == 0)
                 Debugger.Break();
             if (payout == 0)
@@ -48,7 +55,7 @@ namespace ConsoleApplication7
                 //Console.Out.WriteLine("LOST");
                 _losses++;
             }
-            this.Clear();
+            this.Reset();
         }
 
         public string Name { get { return this._name; } }
