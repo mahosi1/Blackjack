@@ -16,12 +16,12 @@ namespace Testing
             File.Delete(@"C:\tmp\test.txt");
             var k = new TextWriterTraceListener(@"C:\tmp\test.txt");
             Trace.Listeners.Add(k);
-            //Trace.Listeners.Add(new ConsoleTraceListener());
+            Trace.Listeners.Add(new ConsoleTraceListener());
 
             var table = new Table(5, 10);
             table.AddPlayer(new ByTheBook("Joe"));
-            table.AddPlayer(new ByTheBook("Jill"), 4);
-            table.AddPlayer(new ByTheBook("Josh"), 2);
+            //table.AddPlayer(new ByTheBook("Jill"), 4);
+            //table.AddPlayer(new ByTheBook("Josh"), 2);
             for (int i = 0; i < 1000; i++)
                 table.PlayHand(); 
    

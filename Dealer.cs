@@ -12,11 +12,10 @@ namespace Testing
             this.Shuffle();
         }
 
-        public void SetCard(Suit suit, CardFace cardFace, int index)
+        public Card TopCard
         {
-            this.AtIndex(suit, cardFace, index);
+            get { return this.Hand.First(); }
         }
-
 
 
         public Card Deal()
@@ -32,30 +31,14 @@ namespace Testing
 
         public override PlayAction Play(Card dealersTopCard)
         {
-
-
-            if (this.CurrentValue().Any(x => x >= 18))
+            if(null != this.Hand.SoftValue)
             {
-                return PlayAction.Stay;
+                if (this.Hand.SoftValue.Value < 17)
+                    return PlayAction.Hit;
             }
-
-
-
-            if(this.CurrentValue().Any(x => x == 17) && !this.SoftValues().Any())
-            {
-                //if (this.Hand.Any(x => x.CardFace == CardFace.Ace))
-                //{
-                //    //Debugger.Break();
-                //}
-
-                return PlayAction.Stay;
-            }
-            //Console.Out.WriteLine("Hitting on a ");
-            //this.CurrentValue().ForEach(x => Console.Out.WriteLine("\t{0}", x));
-
-
-            return PlayAction.Hit;
-
+            if (this.Hand.HardValue < 17)
+                return PlayAction.Hit;
+            return PlayAction.Stay;
         }
 
         public bool NeedsToNewShoe()

@@ -14,6 +14,8 @@ namespace Testing
         private readonly Dealer _dealer = new Dealer("Freddie");
         private readonly Player[] _players;
 
+        
+
         public Table(int seats, int minimumBet)
         {
             _seats = seats;
@@ -73,11 +75,11 @@ namespace Testing
             }
             _dealer.TakeCard(_dealer.Deal());
 
-            if (!_dealer.HasBlackJack())
+            if (!_dealer.Hand.IsBlackjack)
             {
                 foreach (Player player in toPlay)
                 {
-                    if (player.HasBlackJack())
+                    if (player.Hand.IsBlackjack)
                         continue;
                     this.PlayHand(player);
                 }
@@ -85,27 +87,27 @@ namespace Testing
                 this.PlayHand(this._dealer);
             }
 
-            this.TraceOutPlayerback(toPlay, this._dealer);
+            //this.TraceOutPlayerback(toPlay, this._dealer);
 
             this.Payout(toPlay, this._dealer);
 
         }
 
-        private void TraceOutPlayerback(Player[] toPlay, Dealer dealer)
-        {
-            return;
-            foreach (Player player in toPlay)
-            {
+        //private void TraceOutPlayerback(Player[] toPlay, Dealer dealer)
+        //{
+        //    return;
+        //    foreach (Player player in toPlay)
+        //    {
 
-                Utility.WriteLine("{0}\n{1}\n{2}\n\n", player.Name,
-                    player.ToStringOfHand(), player.CurrentValue().First());
-            }
+        //        Utility.WriteLine("{0}\n{1}\n{2}\n\n", player.Name,
+        //            player.ToStringOfHand(), player.CurrentValue().First());
+        //    }
 
-            Utility.WriteLine("{0}\n{1}\n{2}", dealer.Name,
-                dealer.ToStringOfHand(), dealer.CurrentValue().First());
+        //    Utility.WriteLine("{0}\n{1}\n{2}", dealer.Name,
+        //        dealer.ToStringOfHand(), dealer.CurrentValue().First());
 
 
-        }
+        //}
 
         private void Payout(Player[] players, Dealer dealer)
         {
@@ -118,22 +120,22 @@ namespace Testing
                 sb.AppendFormat("{0} - {1}\n", card.CardFace, card.Suit);
             }
 
-            Utility.WriteLine("\n\nDEALER ({1}) \n{0} ", sb, dealer.FinalAmount);
+            Utility.WriteLine("\n\nDEALER ({1}) \n{0} ", sb, dealer.Hand.Final);
 
             foreach (var player in players  )
             {
 
                 Utility.WriteLine("Player: {0}({2}) \n{1} ", player.Name,
-                    player.ToStringOfHand(), player.FinalAmount);
+                    player.ToStringOfHand(), player.Hand.Final);
                 
             }
 
 
             
-            if(dealer.HasBlackJack())
+            if(dealer.Hand.IsBlackjack)
             {
                 Utility.WriteLine("dealer got blackjack");
-                var ties = tmp.Where(x => x.HasBlackJack()).ToArray();
+                var ties = tmp.Where(x => x.Hand.IsBlackjack).ToArray();
                 foreach (Player player in ties)
                 {
                     Utility.WriteLine("loss from dealer bj");
@@ -147,7 +149,7 @@ namespace Testing
                 return;
             }
 
-            var busted = tmp.Where(x => x.IsBusted()).ToArray();
+            var busted = tmp.Where(x => x.Hand.IsBusted).ToArray();
             if(busted.Count() > 0)
             {
                 foreach (Player player in busted)
@@ -157,13 +159,13 @@ namespace Testing
                 }
 
             }
-            
 
 
-            if (dealer.IsBusted())
+
+            if (dealer.Hand.IsBusted)
             {
                 Utility.WriteLine("Dealer busted");
-                var winners = tmp.Where(x => !x.IsBusted()).ToArray();
+                var winners = tmp.Where(x => !x.Hand.IsBusted).ToArray();
                 foreach (Player player in winners)
                 {
                     player.Payout(1);
@@ -175,8 +177,9 @@ namespace Testing
             else
             {
 
+
                 
-                var winners = tmp.Where(x => x.CurrentValue().Any(y => y > dealer.FinalAmount && y <= 21)).ToArray();
+                var winners = tmp.Where(x => x.Hand.Final > dealer.Hand.Final && !x.Hand.IsBusted).ToArray();
                 
                 foreach (Player player in winners)
                 {
@@ -186,7 +189,7 @@ namespace Testing
                 }
 
 
-                var ties = tmp.Where(x => x.CurrentValue().Any(y => y == dealer.FinalAmount)).ToArray();
+                var ties = tmp.Where(x => x.Hand.Final == dealer.Hand.Final && !x.Hand.IsBusted).ToArray();
                 
                 
 
@@ -199,7 +202,7 @@ namespace Testing
                 }
 
 
-                var losers = tmp.Where(x => !x.IsBusted());
+                var losers = tmp.Where(x => !x.Hand.IsBusted);
                 losers.ForEach(x => x.Payout(-1));
 
             }
@@ -222,7 +225,7 @@ namespace Testing
 
             //Card card = new Card(Suit.Clubs, CardFace.Ace);
 
-            PlayAction play = player.Play(this._dealer.FirstCard);
+            PlayAction play = player.Play(this._dealer.TopCard);
             if (play == PlayAction.Stay)
                 return;
             if(play == PlayAction.Hit)

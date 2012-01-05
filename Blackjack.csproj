@@ -49,6 +49,7 @@
     <Compile Include="CardHandler.cs" />
     <Compile Include="Dealer.cs" />
     <Compile Include="Deck.cs" />
+    <Compile Include="Hand.cs" />
     <Compile Include="InvalidCutException.cs" />
     <Compile Include="PlayAction.cs" />
     <Compile Include="Player.cs" />
@@ -58,6 +59,9 @@
     <Compile Include="Suit.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="Utility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

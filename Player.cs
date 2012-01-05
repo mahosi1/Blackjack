@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ConsoleApplication7;
@@ -10,6 +11,7 @@ namespace Testing
     {
         private readonly string _name;
         public event Action<Player> Quitted;
+        private readonly List<bool?> _results = new List<bool?>();
 
         public string TheHand
         {
@@ -35,11 +37,14 @@ namespace Testing
 
         public void Payout(int payout)
         {
-
+            if(payout > 0)
+                _results.Add(true);
+            else if(payout < 0)
+                _results.Add(false);
+            else
+                _results.Add(null);
             Utility.WriteLine("Payout of {0} to {1} with {2}", payout, this.Name, 
-            this.FinalAmount);
-            if (_hand.Count == 0)
-                Debugger.Break();
+            this.Hand.Final);
             if (payout == 0)
             {
                 //Console.Out.WriteLine("TIED");
