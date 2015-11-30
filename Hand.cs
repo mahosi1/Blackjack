@@ -1,41 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ConsoleApplication7;
 
-namespace Testing
+namespace Blackjack
 {
     public class Hand : IEnumerable<Card>
     {
-        readonly List<Card> _cards = new List<Card>();
-
-        public void Add(Card card)
-        {
-            this._cards.Add(card);
-        }
+        private readonly List<Card> _cards = new List<Card>();
 
         public bool CanDouble
         {
-            get { return this._cards.Count == 2; }
+            get { return _cards.Count == 2; }
         }
 
         public bool IsBusted
         {
-            get { return null == this.SoftValue && this.HardValue > 21; }
+            get { return null == SoftValue && HardValue > 21; }
         }
 
         public bool IsBlackjack
         {
-            get { return this._cards.Count == 2 && this.SoftValue.GetValueOrDefault() == 21; }
+            get { return _cards.Count == 2 && SoftValue.GetValueOrDefault() == 21; }
+        }
+
+        public bool CanSplit
+        {
+            get { return _cards.Count == 2 && _cards[0] == _cards[1]; }
         }
 
         public int Final
         {
             get
             {
-                return this.SoftValue.GetValueOrDefault() > this.HardValue
-                           ? this.SoftValue.GetValueOrDefault()
-                           : this.HardValue;
+                return SoftValue.GetValueOrDefault() > HardValue
+                    ? SoftValue.GetValueOrDefault()
+                    : HardValue;
             }
         }
 
@@ -55,22 +54,22 @@ namespace Testing
 
         public int HardValue
         {
-            get
-            {
-                var sum = _cards.Sum(x => x.Value);
-                return sum;
-            }
+            get { return _cards.Sum(x => x.Value); }
         }
-
 
         public IEnumerator<Card> GetEnumerator()
         {
-            return this._cards.GetEnumerator();
+            return _cards.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Add(Card card)
+        {
+            _cards.Add(card);
         }
     }
 }

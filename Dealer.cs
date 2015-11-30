@@ -1,55 +1,53 @@
 using System.Linq;
-using ConsoleApplication7;
 
-namespace Testing
+namespace Blackjack
 {
     public class Dealer : Player
     {
         private Shoe _shoe;
 
-        public Dealer(string name) :base(name)
+        public Dealer(string name) : base(name)
         {
-            this.Shuffle();
+            Shuffle();
         }
 
         public Card TopCard
         {
-            get { return this.Hand.First(); }
+            get { return Hand.First(); }
         }
-
 
         public Card Deal()
         {
-            return this._shoe.GetNextCard();
+            return _shoe.GetNextCard();
         }
 
         public override string ToString()
         {
-            return string.Format("{0} Busts {1}", this.Name, this.Losses);
+            return string.Format("{0} Busts {1}", Name, Losses);
         }
-
 
         public override PlayAction Play(Card dealersTopCard)
         {
-            if(null != this.Hand.SoftValue)
+            if (null != Hand.SoftValue)
             {
-                if (this.Hand.SoftValue.Value < 17)
+                if (Hand.SoftValue.Value < 17)
                     return PlayAction.Hit;
             }
-            if (this.Hand.HardValue < 17)
+            if (Hand.HardValue < 17)
+            {
                 return PlayAction.Hit;
+            }
             return PlayAction.Stay;
         }
 
         public bool NeedsToNewShoe()
         {
-            return (_shoe.Remaining / _shoe.Capacity) < .2;
+            return (_shoe.Remaining/_shoe.Capacity) < .2;
         }
 
         public void Shuffle()
         {
             _shoe = Shoe.Create(7);
         }
-
     }
 }

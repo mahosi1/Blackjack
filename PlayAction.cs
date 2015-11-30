@@ -1,10 +1,13 @@
-namespace Testing
+namespace Blackjack
 {
     public enum PlayAction
     {
         Hit,
         Stay,
         Double,
-        Split
+        DoubleOrHit,
+        DoubleOrStay,
+        Split,
+        Surrender
     }
 }

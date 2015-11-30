@@ -1,6 +1,6 @@
 using System;
 
-namespace Testing
+namespace Blackjack
 {
     public class InvalidCutException : Exception
     {
