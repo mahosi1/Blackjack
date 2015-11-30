@@ -1,31 +1,22 @@
 using System.Diagnostics;
-using Testing;
 
-namespace ConsoleApplication7
+namespace Blackjack
 {
     [DebuggerDisplay("{CardFace} - {Suit}")]
     public class Card
     {
-        private readonly Suit _suit;
-        private readonly CardFace _cardFace;
-
         public Card(Suit suit, CardFace cardFace)
         {
-            _suit = suit;
-            _cardFace = cardFace;
+            Suit = suit;
+            CardFace = cardFace;
         }
 
-        public CardFace CardFace { get { return this._cardFace; } }
-
-        public Suit Suit
-        {
-            get { return _suit; }
-        }
+        public CardFace CardFace { get; }
+        public Suit Suit { get; }
 
         public int Value
         {
-            get { return (int) _cardFace >= 10 ? 10 : (int) _cardFace; }
+            get { return (int) CardFace >= 10 ? 10 : (int) CardFace; }
         }
-
     }
 }

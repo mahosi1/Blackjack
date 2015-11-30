@@ -1,4 +1,4 @@
-namespace Testing
+namespace Blackjack
 {
     public enum Suit
     {
