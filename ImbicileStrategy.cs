@@ -3,8 +3,7 @@ using System.Diagnostics;
 
 namespace Blackjack
 {
-    [DebuggerDisplay("{Name} - {TheHand}")]
-    public class ImbicilePlayer : Player
+    public class ImbicileStrategy : IPlayerStrategy
     {
         private readonly PlayAction[,] _hardTable =
         {
@@ -125,15 +124,10 @@ namespace Blackjack
             }
         };
 
-        public ImbicilePlayer(string name)
-            : base(name)
-        {
-        }
-
-        public override PlayAction Play(Card dealersTopCard)
+        public PlayAction Play(Hand hand, Card dealersTopCard)
         {
             var dealerCardValue = dealersTopCard.Value;
-            var softValue = Hand.SoftValue;
+            var softValue = hand.SoftValue;
             // TODO: complete split functionality
             //if (this.Hand.CanSplit)
             //{
@@ -148,32 +142,18 @@ namespace Blackjack
             }
             else
             {
-                var index = Hand.HardValue - 8;
+                var index = hand.HardValue - 8;
                 index = Math.Max(index, 0);
                 index = Math.Min(index, 9);
                 returnValue = _hardTable[index, dealerCardValue - 1];
             }
             if (returnValue == PlayAction.DoubleOrHit)
             {
-                if (Hand.CanDouble)
-                {
-                    returnValue = PlayAction.Double;
-                }
-                else
-                {
-                    returnValue = PlayAction.Hit;
-                }
+                returnValue = hand.CanDouble ? PlayAction.Double : PlayAction.Hit;
             }
             else if (returnValue == PlayAction.DoubleOrStay)
             {
-                if (Hand.CanDouble)
-                {
-                    returnValue = PlayAction.Double;
-                }
-                else
-                {
-                    returnValue = PlayAction.Stay;
-                }
+                returnValue = hand.CanDouble ? PlayAction.Double : PlayAction.Stay;
             }
             return returnValue;
         }

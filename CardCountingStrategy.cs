@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Blackjack
 {
-    [DebuggerDisplay("{Name} - {TheHand}")]
-    public class CardCountingPlayer : Player
+    public class CardCountingStrategy : IPlayerStrategy
     {
         private int lowCardsSeen = 0;
         private int highCardsSeen = 0;
@@ -127,11 +125,6 @@ namespace Blackjack
             }
         };
 
-        public CardCountingPlayer(string name)
-            : base(name)
-        {
-        }
-
         public void LookAtCard(Card current)
         {
             if (current.Value == 10)
@@ -148,10 +141,10 @@ namespace Blackjack
             }
         }
 
-        public override PlayAction Play(Card dealersTopCard)
+        public PlayAction Play(Hand hand, Card dealersTopCard)
         {
             var dealerCardValue = dealersTopCard.Value;
-            var softValue = Hand.SoftValue;
+            var softValue = hand.SoftValue;
             // TODO: complete split functionality
             //if (this.Hand.CanSplit)
             //{
@@ -166,14 +159,14 @@ namespace Blackjack
             }
             else
             {
-                var index = Hand.HardValue - 8;
+                var index = hand.HardValue - 8;
                 index = Math.Max(index, 0);
                 index = Math.Min(index, 9);
                 returnValue = _hardTable[index, dealerCardValue - 1];
             }
             if (returnValue == PlayAction.DoubleOrHit)
             {
-                if (Hand.CanDouble)
+                if (hand.CanDouble)
                 {
                     returnValue = PlayAction.Double;
                 }
@@ -184,7 +177,7 @@ namespace Blackjack
             }
             else if (returnValue == PlayAction.DoubleOrStay)
             {
-                if (Hand.CanDouble)
+                if (hand.CanDouble)
                 {
                     returnValue = PlayAction.Double;
                 }
