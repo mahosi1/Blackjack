@@ -10,6 +10,8 @@ namespace Blackjack
         private readonly Player _dealer = new Player("Dealer", new DealerStrategy());
         private readonly Player[] _players;
         private Shoe _shoe = Shoe.Create(7);
+        //private ILogger _logger = new TraceLogger();
+        private ILogger _logger = new NullLogger();
 
         public Table(int seats, int minimumBet)
         {
@@ -26,14 +28,7 @@ namespace Blackjack
             {
                 throw new Exception("can't sit on top of another player");
             }
-            player.Quitted += PlayerHasQuit;
             _players[seat] = player;
-        }
-
-        private void PlayerHasQuit(Player obj)
-        {
-            var index = Array.FindIndex(_players, x => x == obj);
-            _players[index] = null;
         }
 
         public void AddPlayer(string name, IPlayerStrategy strategy)
@@ -90,26 +85,30 @@ namespace Blackjack
             {
                 sb.AppendFormat("{0} - {1}\n", card.CardFace, card.Suit);
             }
-            Utility.WriteLine("\n\nDEALER ({1}) \n{0} ", sb, dealer.Hand.Final);
+            _logger.WriteLine("\n\nDEALER ({1}) \n{0} ", sb, dealer.Hand.Final);
 
             foreach (var player in players)
             {
-                Utility.WriteLine("Player: {0}({2}) \n{1} ", player.Name,
+                _logger.WriteLine("Player: {0}({2}) \n{1} ", player.Name,
                     player.ToStringOfHand(), player.Hand.Final);
             }
             if (dealer.Hand.IsBlackjack)
             {
-                Utility.WriteLine("dealer got blackjack");
+                _logger.WriteLine("dealer got blackjack");
                 var ties = tmp.Where(x => x.Hand.IsBlackjack).ToArray();
                 foreach (var player in ties)
                 {
-                    Utility.WriteLine("loss from dealer bj");
+                    _logger.WriteLine("Payout of {0} to {1} with {2}", 0, player.Name, player.Hand.Final);
                     player.Payout(0);
                     tmp.Remove(player);
                 }
                 var losers = tmp.Except(ties);
 
-                losers.ForEach(x => x.Payout(-1));
+                foreach (var player in losers)
+                {
+                    _logger.WriteLine("Payout of {0} to {1} with {2}", -1, player.Name, player.Hand.Final);
+                    player.Payout(-1);
+                }
                 dealer.Payout(1);
                 return;
             }
@@ -119,6 +118,7 @@ namespace Blackjack
             {
                 foreach (var player in busted)
                 {
+                    _logger.WriteLine("Payout of {0} to {1} with {2}", -1, player.Name, player.Hand.Final);
                     player.Payout(-1);
                     tmp.Remove(player);
                 }
@@ -126,14 +126,15 @@ namespace Blackjack
 
             if (dealer.Hand.IsBusted)
             {
-                Utility.WriteLine("Dealer busted");
+                _logger.WriteLine("Dealer busted");
                 var winners = tmp.Where(x => !x.Hand.IsBusted).ToArray();
                 foreach (var player in winners)
                 {
+                    _logger.WriteLine("Payout of {0} to {1} with {2}", 1, player.Name, player.Hand.Final);
                     player.Payout(1);
                     tmp.Remove(player);
                 }
-
+                _logger.WriteLine("Payout of {0} to {1} with {2}", -1, dealer.Name, dealer.Hand.Final);
                 dealer.Payout(-1);
             }
             else
@@ -142,17 +143,23 @@ namespace Blackjack
 
                 foreach (var player in winners)
                 {
+                    _logger.WriteLine("Payout of {0} to {1} with {2}", 1, player.Name, player.Hand.Final);
                     player.Payout(1);
                     tmp.Remove(player);
                 }
                 var ties = tmp.Where(x => x.Hand.Final == dealer.Hand.Final && !x.Hand.IsBusted).ToArray();
                 foreach (var player in ties)
                 {
+                    _logger.WriteLine("Payout of {0} to {1} with {2}", 0, player.Name, player.Hand.Final);
                     player.Payout(0);
                     tmp.Remove(player);
                 }
                 var losers = tmp.Where(x => !x.Hand.IsBusted);
-                losers.ForEach(x => x.Payout(-1));
+                foreach (var player in losers)
+                {
+                    _logger.WriteLine("Payout of {0} to {1} with {2}", -1, player.Name, player.Hand.Final);
+                    player.Payout(-1);
+                }
             }
             _dealer.Reset();
         }
@@ -169,7 +176,9 @@ namespace Blackjack
                 var c = Deal();
                 var bust = player.TakeCard(c);
                 if (!bust)
+                {
                     PlayHand(player);
+                }
             }
             else if (play == PlayAction.Double)
             {
@@ -183,7 +192,10 @@ namespace Blackjack
 
         public void ReportStats()
         {
-            _players.Where(x => null != x).ToArray().ForEach(x => Console.Out.WriteLine(x.ToString()));
+            foreach (var player in _players.Where(x => null != x).ToArray())
+            {
+                Console.Out.WriteLine(player.ToString());
+            }
             Console.Out.WriteLine(_dealer.ToString());
         }
     }

@@ -166,25 +166,11 @@ namespace Blackjack
             }
             if (returnValue == PlayAction.DoubleOrHit)
             {
-                if (hand.CanDouble)
-                {
-                    returnValue = PlayAction.Double;
-                }
-                else
-                {
-                    returnValue = PlayAction.Hit;
-                }
+                returnValue = hand.CanDouble ? PlayAction.Double : PlayAction.Hit;
             }
             else if (returnValue == PlayAction.DoubleOrStay)
             {
-                if (hand.CanDouble)
-                {
-                    returnValue = PlayAction.Double;
-                }
-                else
-                {
-                    returnValue = PlayAction.Stay;
-                }
+                returnValue = hand.CanDouble ? PlayAction.Double : PlayAction.Stay;
             }
             return returnValue;
         }

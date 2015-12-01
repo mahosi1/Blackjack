@@ -4,12 +4,7 @@ namespace Blackjack
     {
         public PlayAction Play(Hand hand, Card dealersTopCard)
         {
-            if (null != hand.SoftValue)
-            {
-                if (hand.SoftValue.Value < 17)
-                    return PlayAction.Hit;
-            }
-            if (hand.HardValue < 17)
+            if ((null != hand.SoftValue && hand.SoftValue.Value < 17) || hand.HardValue < 17)
             {
                 return PlayAction.Hit;
             }

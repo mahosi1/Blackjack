@@ -16,10 +16,8 @@ namespace Blackjack
                 var suit = (Suit) i;
                 for (var j = 1; j <= 13; j++)
                 {
-                    var cardFace = (CardFace) j;
-                    var card = new Card(suit, cardFace);
                     var index = (13*i) + j - 1;
-                    _cards[index] = card;
+                    _cards[index] = new Card(suit, (CardFace)j);
                 }
             }
         }
