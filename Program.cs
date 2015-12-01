@@ -13,11 +13,11 @@ namespace Blackjack
             Trace.Listeners.Add(new ConsoleTraceListener());
 
             var table = new Table(5, 10);
-            table.AddPlayer(new ByTheBookPlayer("Book Guy 1"));
-            //table.AddPlayer(new ImbicilePlayer("Bad guy 1"));
-            table.AddPlayer(new ByTheBookPlayer("Book Guy 2"));
-            table.AddPlayer(new ImbicilePlayer("Bad guy 1"));
-            table.AddPlayer(new RandomPlayer("Mad man"));
+            table.AddPlayer("Book Guy 1", new ByTheBookStrategy());
+            //table.AddPlayer("Bad guy 1", new ImbicilePlayer());
+            table.AddPlayer("Book Guy 2", new ByTheBookStrategy());
+            table.AddPlayer("Bad guy 1", new ImbicileStrategy());
+            table.AddPlayer("Mad man", new RandomStrategy());
             for (var i = 0; i < 10000; i++)
             {
                 table.PlayHand();

@@ -62,5 +62,10 @@ namespace Blackjack
             _cards.Remove(card);
             return card;
         }
+
+        public bool NeedsNewShoe()
+        {
+            return (Remaining / Capacity) < .2;
+        }
     }
 }

@@ -1,17 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Blackjack
 {
-    public abstract class Player : CardHandler, IEquatable<Player>
+    public class Player : IEquatable<Player>
     {
         private readonly List<bool?> _results = new List<bool?>();
         private int _pushes;
         private int _wins;
+        private readonly IPlayerStrategy _strategy;
 
-        protected Player(string name)
+        public Hand Hand { get; private set; } = new Hand();
+
+        public Player(string name, IPlayerStrategy strategy)
         {
             Name = name;
+            _strategy = strategy;
         }
 
         public string TheHand
@@ -34,7 +39,10 @@ namespace Blackjack
             Clear();
         }
 
-        public abstract PlayAction Play(Card dealersTopCard);
+        public PlayAction Play(Hand hand, Card dealersTopCard)
+        {
+            return _strategy.Play(hand, dealersTopCard);
+        }
 
         public void Payout(int payout)
         {
@@ -78,6 +86,27 @@ namespace Blackjack
         {
             return string.Format("{0} Wins({1}), Ties({2}), Losses({3}), {4}% win ", Name, _wins, _pushes, Losses,
                 (((double) _wins)/(_wins + Losses)).ToString("P"));
+        }
+
+        public string ToStringOfHand()
+        {
+            var sb = new StringBuilder();
+            foreach (var card in Hand)
+            {
+                sb.AppendFormat("{0}-{1}\n", card.CardFace, card.Suit);
+            }
+            return sb.ToString();
+        }
+
+        public void Clear()
+        {
+            Hand = new Hand();
+        }
+
+        public bool TakeCard(Card card)
+        {
+            Hand.Add(card);
+            return Hand.IsBusted;
         }
     }
 }
