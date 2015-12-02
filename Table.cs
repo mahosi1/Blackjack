@@ -58,7 +58,8 @@ namespace Blackjack
             {
                 player.TakeCard(Deal());
             }
-            _dealer.TakeCard(Deal());
+            Card dealerTopCard = Deal();
+            _dealer.TakeCard(dealerTopCard);
 
             foreach (var player in toPlay)
             {
@@ -74,9 +75,9 @@ namespace Blackjack
                     {
                         continue;
                     }
-                    PlayHand(player);
+                    PlayHand(player, dealerTopCard);
                 }
-                PlayHand(_dealer);
+                PlayHand(_dealer, dealerTopCard);
             }
             Payout(toPlay, _dealer);
         }
@@ -157,9 +158,9 @@ namespace Blackjack
             _dealer.Reset();
         }
 
-        private void PlayHand(Player player)
+        private void PlayHand(Player player, Card dealerTopCard)
         {
-            var play = player.Play(player.Hand, _dealer.Hand.First());
+            var play = player.Play(player.Hand, dealerTopCard);
             if (play == PlayAction.Stay)
             {
                 return;
@@ -169,7 +170,7 @@ namespace Blackjack
                 var c = Deal();
                 var bust = player.TakeCard(c);
                 if (!bust)
-                    PlayHand(player);
+                    PlayHand(player, dealerTopCard);
             }
             else if (play == PlayAction.Double)
             {

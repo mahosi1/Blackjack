@@ -7,17 +7,13 @@ namespace Blackjack
     {
         private readonly int _capactiy;
         private readonly List<Card> _cards = new List<Card>();
-        private readonly int _deckCount;
         private int? _cut;
 
         private Shoe(int decks)
         {
-            _deckCount = decks;
-
             for (var i = 0; i < decks; i++)
             {
                 var deck = new Deck();
-                deck.Shuffle(100);
                 foreach (var card in deck)
                 {
                     _cards.Add(card);
@@ -38,22 +34,21 @@ namespace Blackjack
 
         public static Shoe Create(int decks)
         {
-            return new Shoe(decks);
+            var shoe = new Shoe(decks);
+            shoe.Cut();
+            return shoe;
         }
 
-        public void Cut(int percent)
+        void Cut()
         {
             if (_cut != null)
             {
                 throw new Exception("Cant cut twice");
             }
 
-            var position = (_deckCount*52)*percent;
-            if (position < 52 || position > 90000)
-            {
-                throw new InvalidCutException();
-            }
-            _cut = position;
+            // todo: might need to limit this
+            var percent = new Random().NextDouble();
+            _cut = (int)(percent * _capactiy);
         }
 
         public Card GetNextCard()
@@ -65,7 +60,7 @@ namespace Blackjack
 
         public bool NeedsNewShoe()
         {
-            return (Remaining / Capacity) < .2;
+            return _cut >= _cards.Count;
         }
     }
 }
