@@ -84,8 +84,11 @@ namespace Blackjack
 
         public override string ToString()
         {
-            return string.Format("{0} Wins({1}), Ties({2}), Losses({3}), {4}% win ", Name, _wins, _pushes, Losses,
-                (((double) _wins)/(_wins + Losses)).ToString("P"));
+            return string.Format("{0} Wins({1}), Ties({2}), Losses({3}), {4}% lose  {5}%wins  {6}%ties", Name, _wins,
+                _pushes, Losses,
+                (((double) Losses)/(_wins + Losses + _pushes)).ToString("P"),
+                (((double) _wins)/(_wins + Losses + _pushes)).ToString("P"),
+                (((double)_pushes) /(_wins + Losses + _pushes)).ToString("P"));
         }
 
         public string ToStringOfHand()
