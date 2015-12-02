@@ -42,44 +42,41 @@ namespace Blackjack
             AddPlayer(new Player(name, strategy), index);
         }
 
-        public Card Deal()
-        {
-            return _shoe.GetNextCard();
-        }
-
         public void PlayHand()
         {
             if (_shoe.NeedsNewShoe())
-            {
                 _shoe = Shoe.Create(7);
-            }
-            var toPlay = _players.Where(x => null != x).ToArray();
-            foreach (var player in toPlay)
-            {
-                player.TakeCard(Deal());
-            }
-            Card dealerTopCard = Deal();
-            _dealer.TakeCard(dealerTopCard);
 
-            foreach (var player in toPlay)
-            {
-                player.TakeCard(Deal());
-            }
-            _dealer.TakeCard(Deal());
+            Player[] players = _players.Where(x => null != x).ToArray();
+
+            Card dealersTopCard = SeedTable(players, this._dealer, this._shoe);
+
+            bool outstanding = false;
 
             if (!_dealer.Hand.IsBlackjack)
             {
-                foreach (var player in toPlay)
+                foreach (Player player in players)
                 {
                     if (player.Hand.IsBlackjack)
-                    {
                         continue;
-                    }
-                    PlayHand(player, dealerTopCard);
+                    outstanding |= PlayHand(player, dealersTopCard, _shoe);
                 }
-                PlayHand(_dealer, dealerTopCard);
+                if (outstanding)
+                    PlayHand(_dealer, dealersTopCard, _shoe);
             }
-            Payout(toPlay, _dealer);
+            Payout(players, _dealer);
+        }
+
+        Card SeedTable(Player[] players, Player dealer, Shoe shoe)
+        {
+            players.ForEach(x => x.TakeCard(shoe.GetNextCard()));
+            dealer.TakeCard(shoe.GetNextCard());
+            players.ForEach(x => x.TakeCard(shoe.GetNextCard()));
+
+            Card dealerTopCard = shoe.GetNextCard();
+            dealer.TakeCard(dealerTopCard);
+
+            return dealerTopCard;
         }
 
         private void Payout(Player[] players, Player dealer)
@@ -158,28 +155,31 @@ namespace Blackjack
             _dealer.Reset();
         }
 
-        private void PlayHand(Player player, Card dealerTopCard)
+        private bool PlayHand(Player player, Card dealerTopCard, Shoe shoe)
         {
-            var play = player.Play(player.Hand, dealerTopCard);
+            PlayAction play = player.Play(player.Hand, dealerTopCard);
             if (play == PlayAction.Stay)
             {
-                return;
+                return true;
             }
             if (play == PlayAction.Hit)
             {
-                var c = Deal();
-                var bust = player.TakeCard(c);
-                if (!bust)
-                    PlayHand(player, dealerTopCard);
+                Card card = shoe.GetNextCard();
+                bool bust = player.TakeCard(card);
+                if (bust)
+                    return false;
+                return PlayHand(player, dealerTopCard, shoe);
             }
-            else if (play == PlayAction.Double)
+            if (play == PlayAction.Double)
             {
                 if (player.Hand.Count() != 2)
-                {
                     throw new Exception("only double on first");
-                }
-                player.TakeCard(Deal());
+                var bust = player.TakeCard(shoe.GetNextCard());
+                if (bust)
+                    return false;
+                return true;
             }
+            throw new InvalidOperationException("shouldn't be here");
         }
 
         public void ReportStats()
