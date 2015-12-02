@@ -21,6 +21,8 @@ namespace Blackjack
             {
                 returnValue = PlayAction.Hit;
             }
+            if (returnValue == PlayAction.Split)
+                returnValue = _random.Next()%2 == 0 ? PlayAction.Hit : PlayAction.Stay;
             return returnValue;
         }
     }
