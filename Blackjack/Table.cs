@@ -37,8 +37,12 @@ namespace Blackjack
 
             return dealerTopCard;
         }
+
+        ILogger logger = new NullLogger();
+
         void Payout(Player[] players, Player dealer)
         {
+            
             var tmp = new List<Player>(players);
 
             var sb = new StringBuilder();
@@ -46,20 +50,20 @@ namespace Blackjack
             {
                 sb.AppendFormat("{0} - {1}\n", card.CardFace, card.Suit);
             }
-            Utility.WriteLine("\n\nDEALER ({1}) \n{0} ", sb, dealer.Hand.Final);
+            logger.WriteLine("\n\nDEALER ({1}) \n{0} ", sb, dealer.Hand.Final);
 
             foreach (var player in players)
             {
-                Utility.WriteLine("Player: {0}({2}) \n{1} ", player.Name,
+                logger.WriteLine("Player: {0}({2}) \n{1} ", player.Name,
                     player.ToStringOfHand(), player.Hand.Final);
             }
             if (dealer.Hand.IsBlackjack)
             {
-                Utility.WriteLine("dealer got blackjack");
+                logger.WriteLine("dealer got blackjack");
                 var ties = tmp.Where(x => x.Hand.IsBlackjack).ToArray();
                 foreach (var player in ties)
                 {
-                    Utility.WriteLine("loss from dealer bj");
+                    logger.WriteLine("loss from dealer bj");
                     player.Payout(0);
                     tmp.Remove(player);
                 }
@@ -82,7 +86,7 @@ namespace Blackjack
 
             if (dealer.Hand.IsBusted)
             {
-                Utility.WriteLine("Dealer busted");
+                logger.WriteLine("Dealer busted");
                 var winners = tmp.Where(x => !x.Hand.IsBusted).ToArray();
                 foreach (var player in winners)
                 {

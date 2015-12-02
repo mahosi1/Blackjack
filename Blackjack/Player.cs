@@ -58,7 +58,8 @@ namespace Blackjack
             {
                 _results.Add(null);
             }
-            Utility.WriteLine("Payout of {0} to {1} with {2}", payout, Name, Hand.Final);
+            //new TraceLogger().WriteLine("Payout of {0} to {1} with {2}", payout, Name, Hand.Final);
+
             if (payout == 0)
             {
                 //Console.Out.WriteLine("TIED");

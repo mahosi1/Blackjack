@@ -32,6 +32,7 @@ namespace Blackjack
         public static void ReportStats(Player[] players, Player dealer)
         {
             players.Where(x => null != x).ToArray().ForEach(x => Console.Out.WriteLine(x.ToString()));
+            //new TraceLogger().WriteLine(dealer.ToString());
             Console.Out.WriteLine(dealer.ToString());
         }
 

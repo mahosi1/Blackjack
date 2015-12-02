@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Blackjack
 {
@@ -12,11 +11,6 @@ namespace Blackjack
             {
                 action(item);
             }
-        }
-
-        public static void WriteLine(string msg, params object[] vals)
-        {
-            Trace.WriteLine(string.Format(msg, vals));
         }
     }
 }
