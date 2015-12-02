@@ -7,66 +7,25 @@ namespace Blackjack
 {
     public class Table
     {
-        private readonly Player _dealer = new Player("Dealer", new DealerStrategy());
-        private readonly Player[] _players;
-        private Shoe _shoe = Shoe.Create(7);
-
-        public Table(int seats, int minimumBet)
+        public void PlayHand(Shoe shoe, Player[] players, Player dealer)
         {
-            Seats = seats;
-            MinimumBet = minimumBet;
-            _players = new Player[seats];
-        }
-        public int Seats { get; }
-        public int MinimumBet { get; }
-
-        public void AddPlayer(Player player, int seat)
-        {
-            if (_players[seat] != null)
-            {
-                throw new Exception("can't sit on top of another player");
-            }
-            player.Quitted += PlayerHasQuit;
-            _players[seat] = player;
-        }
-
-        private void PlayerHasQuit(Player obj)
-        {
-            var index = Array.FindIndex(_players, x => x == obj);
-            _players[index] = null;
-        }
-
-        public void AddPlayer(string name, IPlayerStrategy strategy)
-        {
-            var index = Array.FindIndex(_players, x => x == null);
-            AddPlayer(new Player(name, strategy), index);
-        }
-
-        public void PlayHand()
-        {
-            if (_shoe.NeedsNewShoe())
-                _shoe = Shoe.Create(7);
-
-            Player[] players = _players.Where(x => null != x).ToArray();
-
-            Card dealersTopCard = SeedTable(players, this._dealer, this._shoe);
+            Card dealersTopCard = SeedTable(players, dealer, shoe);
 
             bool outstanding = false;
 
-            if (!_dealer.Hand.IsBlackjack)
+            if (!dealer.Hand.IsBlackjack)
             {
                 foreach (Player player in players)
                 {
                     if (player.Hand.IsBlackjack)
                         continue;
-                    outstanding |= PlayHand(player, dealersTopCard, _shoe);
+                    outstanding |= PlayHand(player, dealersTopCard, shoe);
                 }
                 if (outstanding)
-                    PlayHand(_dealer, dealersTopCard, _shoe);
+                    PlayHand(dealer, dealersTopCard, shoe);
             }
-            Payout(players, _dealer);
+            Payout(players, dealer);
         }
-
         Card SeedTable(Player[] players, Player dealer, Shoe shoe)
         {
             players.ForEach(x => x.TakeCard(shoe.GetNextCard()));
@@ -78,8 +37,7 @@ namespace Blackjack
 
             return dealerTopCard;
         }
-
-        private void Payout(Player[] players, Player dealer)
+        void Payout(Player[] players, Player dealer)
         {
             var tmp = new List<Player>(players);
 
@@ -152,10 +110,9 @@ namespace Blackjack
                 var losers = tmp.Where(x => !x.Hand.IsBusted);
                 losers.ForEach(x => x.Payout(-1));
             }
-            _dealer.Reset();
+            dealer.Reset();
         }
-
-        private bool PlayHand(Player player, Card dealerTopCard, Shoe shoe)
+        bool PlayHand(Player player, Card dealerTopCard, Shoe shoe)
         {
             PlayAction play = player.Play(player.Hand, dealerTopCard);
             if (play == PlayAction.Stay)
@@ -180,12 +137,6 @@ namespace Blackjack
                 return true;
             }
             throw new InvalidOperationException("shouldn't be here");
-        }
-
-        public void ReportStats()
-        {
-            _players.Where(x => null != x).ToArray().ForEach(x => Console.Out.WriteLine(x.ToString()));
-            Console.Out.WriteLine(_dealer.ToString());
         }
     }
 }

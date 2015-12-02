@@ -9,7 +9,7 @@ namespace Blackjack
         private readonly List<Card> _cards = new List<Card>();
         private int? _cut;
 
-        private Shoe(int decks)
+        public Shoe(int decks)
         {
             for (var i = 0; i < decks; i++)
             {
@@ -20,6 +20,7 @@ namespace Blackjack
                 }
             }
             _capactiy = _cards.Count;
+            this.Cut();
         }
 
         public double Remaining
@@ -30,13 +31,6 @@ namespace Blackjack
         public double Capacity
         {
             get { return _capactiy; }
-        }
-
-        public static Shoe Create(int decks)
-        {
-            var shoe = new Shoe(decks);
-            shoe.Cut();
-            return shoe;
         }
 
         void Cut()
