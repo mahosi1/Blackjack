@@ -45,9 +45,7 @@ namespace Blackjack
             {
                 throw new Exception("Cant cut twice");
             }
-
-            // todo: might need to limit this
-            var percent = new Random().NextDouble();
+            var percent = Math.Max(new Random().Next(20, 80) / 100d, new Random().NextDouble());
             _cut = (int)(percent * _capactiy);
         }
 
